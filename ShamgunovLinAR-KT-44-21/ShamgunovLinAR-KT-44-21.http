@@ -1,0 +1,6 @@
+@ShamgunovLinAR_KT_44_21_HostAddress = http://localhost:5152
+
+GET {{ShamgunovLinAR_KT_44_21_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
