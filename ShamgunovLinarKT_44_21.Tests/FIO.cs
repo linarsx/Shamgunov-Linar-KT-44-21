@@ -1,14 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NLog.Filters;
 using ShamgunovLinAR_KT_44_21.Database;
 using ShamgunovLinAR_KT_44_21.Interfaces.StudentsInterfaces;
 using ShamgunovLinAR_KT_44_21.Models;
+using ShamgunovLinAR_KT_44_21.Filters.StudentFilters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShamgunovLinarKT_44_21.Tests
+namespace ShamgunovLinAR_KT_44_21.Tests
 {
     public class StudentTests : IDisposable
     {
@@ -19,7 +21,7 @@ namespace ShamgunovLinarKT_44_21.Tests
         public StudentTests()
         {
             _dbContextOptions = new DbContextOptionsBuilder<StudentDbContext>()
-                .UseInMemoryDatabase(databaseName: "student_db_LIK")
+                .UseInMemoryDatabase(databaseName: "student_db_lS")
                 .Options;
 
             _context = new StudentDbContext(_dbContextOptions);
@@ -31,21 +33,22 @@ namespace ShamgunovLinarKT_44_21.Tests
         private void SeedDatabase() // база данных
         {
             var groups = new List<Group>
-        {
-            new Group { GroupName = "KT-44-21" },
-            new Group { GroupName = "KT-43-21" },
-            new Group { GroupName = "KT-42-21" },
-            new Group { GroupName = "KT-41-21" }
-        };
+    {
+        new Group { GroupName = "KT-45-21", GroupId = 1 },
+        new Group { GroupName = "KT-43-21", GroupId = 2 },
+        new Group { GroupName = "KT-42-21", GroupId = 3 },
+        new Group { GroupName = "KT-41-21", GroupId = 4 }
+    };
 
             _context.Set<Group>().AddRange(groups);
 
             var students = new List<Student>
-        {
-            new Student { FirstName = "a", LastName = "a", MiddleName = "a", GroupId = 4 },
-            new Student { FirstName = "a", LastName = "a", MiddleName = "b", GroupId = 4 },
-            new Student { FirstName = "a", LastName = "b", MiddleName = "a", GroupId = 3 }
-        };
+    {
+        new Student { FirstName = "a", LastName = "a", MiddleName = "a", GroupId = 1 }, 
+        new Student { FirstName = "a", LastName = "a", MiddleName = "a", GroupId = 2 }, 
+        new Student { FirstName = "a", LastName = "a", MiddleName = "b", GroupId = 1 }, 
+
+    };
 
             _context.Set<Student>().AddRange(students);
             _context.SaveChanges();
@@ -55,34 +58,51 @@ namespace ShamgunovLinarKT_44_21.Tests
         public async Task GetStudentsByFioAsync_KT4421_TwoObjects() // тест по ФИО 
         {
             // Arrange
-            var filter1 = new ShamgunovLinAR_KT_44_21.Filters.StudentFioFilters.StudentFioFilter
+            var filter1 = new Filters.StudentFioFilters.StudentFioFilter
             {
                 FirstName = "a",
                 LastName = "a",
-                MiddleName = "a"
+                MiddleName = "b"
             };
 
             // Act
             var studentsResult1 = await _studentService.GetStudentsByFioAsync(filter1, CancellationToken.None);
 
             // Assert
-            Assert.Equal(1, studentsResult1.Length);
+            Assert.Equal(1, studentsResult1.Length); 
         }
 
         [Fact]
         public async Task GetStudentsByIdGroupAsync_KT4421_TwoObjects() // тест по GroupId 
         {
             // Act
-            var filter2 = new ShamgunovLinAR_KT_44_21.Filters.GroupFilter.StudentIdGroup
+            var filter2 = new Filters.GroupFilter.StudentIdGroup
             {
-                GroupId = 4
+                GroupId = 1
             };
 
             var studentsResult2 = await _studentService.GetStudentsByIdGroupAsync(filter2, CancellationToken.None);
 
             // Assert
-            Assert.Equal(2, studentsResult2.Length);
+            Assert.Equal(2, studentsResult2.Length); 
         }
+
+        [Fact]
+        public async Task GetStudentsByGroupNameAsync_KT4421_TwoObjects() // тест по GroupName
+        {
+            // Arrange
+            var groupNameFilter = new Filters.StudentFilters.StudentGroupFilter
+            {
+                GroupName = "KT-45-21"
+            };
+
+            // Act
+            var studentsResult = await _studentService.GetStudentsByGroupAsync(groupNameFilter, CancellationToken.None);
+
+            // Assert
+            Assert.Equal(2, studentsResult.Length); 
+        }
+
 
         public void Dispose()
         {

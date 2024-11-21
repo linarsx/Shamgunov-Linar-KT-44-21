@@ -11,7 +11,7 @@ using ShamgunovLinAR_KT_44_21.Database;
 namespace ShamgunovLinAR_KT_44_21.Migrations
 {
     [DbContext(typeof(StudentDbContext))]
-    [Migration("20241115231601_CreateDatabase")]
+    [Migration("20241121124341_CreateDatabase")]
     partial class CreateDatabase
     {
         /// <inheritdoc />

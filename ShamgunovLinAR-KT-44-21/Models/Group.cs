@@ -13,7 +13,7 @@ namespace ShamgunovLinAR_KT_44_21.Models
         public List<Course>? Courses { get; set; }
         public bool IsValidGroupName()
         {
-            return Regex.Match(GroupName, @"\D*-\d*-\d\d").Success;
+            return Regex.IsMatch(GroupName, @"^[A-Za-z]{2}-\d{2}-\d{2}$");
         }
     }
 }
